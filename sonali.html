@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Animated Web Testing Page — V2</title>
+  <style>
+    :root{
+      --bg:#0b0f1a;--panel:#0f1524;--ink:#e8ebf3;--muted:#9aa3b2;--brand:#8b5cf6;--cyan:#22d3ee;--lime:#84cc16;--rose:#fb7185;--radius:18px;--shadow:0 10px 30px rgba(0,0,0,.35)
+    }
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;color:var(--ink);background:radial-gradient(60vmax 60vmax at 15% -10%,rgba(139,92,246,.25),transparent 60%),radial-gradient(60vmax 60vmax at 100% 10%,rgba(34,211,238,.2),transparent 60%),linear-gradient(180deg,var(--bg),#0b0f1a)}
+    .shell{min-height:100dvh;display:grid;grid-template-rows:auto 1fr auto;position:relative;overflow:clip}
+
+    /* Floating particles */
+    .stars{position:absolute;inset:-10% -10% 0;pointer-events:none;z-index:0;opacity:.35;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:24px 24px;animation:drift 40s linear infinite}
+    @keyframes drift{to{transform:translate3d(-10%, -5%,0)}}
+
+    header{position:sticky;top:0;z-index:2;padding:16px 18px;display:flex;align-items:center;gap:12px;justify-content:space-between;background:linear-gradient(to bottom,rgba(11,15,26,.7),transparent);backdrop-filter:blur(8px)}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.3px}
+    .cube{width:28px;height:28px;border-radius:8px;background:conic-gradient(from 0turn,var(--brand),var(--cyan),var(--lime),var(--brand));box-shadow:inset 0 0 0 4px rgba(255,255,255,.06),var(--shadow);animation:spin 5s linear infinite}
+    @keyframes spin{to{transform:rotate(1turn)}}
+
+    .actions{display:flex;gap:10px}
+    .pill{padding:10px 14px;border-radius:999px;border:1px solid color-mix(in oklab,var(--ink),transparent 86%);background:linear-gradient(180deg,color-mix(in oklab,var(--panel),var(--ink) 6%),color-mix(in oklab,var(--panel),transparent 20%));color:var(--ink);font-weight:600;text-decoration:none;box-shadow:var(--shadow);transition:transform .2s ease}
+    .pill:hover{transform:translateY(-2px)}
+    .pill.primary{background:linear-gradient(180deg,color-mix(in oklab,var(--brand),white 10%),var(--brand));color:#0b0f1a}
+
+    main{z-index:1;padding:24px clamp(14px,3vw,28px) 64px}
+
+    /* HERO */
+    .hero{position:relative;display:grid;gap:14px;align-items:start;padding:24px;border-radius:var(--radius);background:linear-gradient(135deg,color-mix(in oklab,var(--panel),transparent 30%),color-mix(in oklab,var(--panel),var(--ink) 2%));box-shadow:var(--shadow);border:1px solid color-mix(in oklab,var(--ink),transparent 90%);overflow:hidden}
+    .blob{position:absolute;width:300px;height:300px;right:-70px;top:-70px;background:radial-gradient(circle at 30% 30%,var(--cyan),transparent 60%),radial-gradient(circle at 70% 70%,var(--brand),transparent 60%);filter:blur(18px) saturate(120%);opacity:.7;animation:morph 18s ease-in-out infinite}
+    @keyframes morph{0%{border-radius:34% 66% 43% 57%/43% 35% 65% 57%}50%{border-radius:61% 39% 70% 30%/44% 72% 28% 56%}100%{border-radius:34% 66% 43% 57%/43% 35% 65% 57%}}
+
+    .hero h1{margin:0;font-size:clamp(28px,6vw,54px);line-height:1.05;letter-spacing:-.02em;color:transparent;background:linear-gradient(90deg,#fff 20%,#bcd6ff 60%,#fff 80%);-webkit-background-clip:text;background-clip:text;animation:shine 5s linear infinite}
+    @keyframes shine{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+    /* marquee */
+    .ticker{--h:36px;height:var(--h);overflow:hidden;border-radius:999px;border:1px solid color-mix(in oklab,var(--ink),transparent 86%);background:linear-gradient(180deg,color-mix(in oklab,var(--panel),var(--ink) 4%),color-mix(in oklab,var(--panel),transparent 18%));display:flex;align-items:center}
+    .ticker .line{white-space:nowrap;animation:ticker 20s linear infinite;padding-inline:18px}
+    @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+
+    /* GRID */
+    .grid{display:grid;gap:16px;margin-top:20px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+    .card{position:relative;padding:18px;border-radius:var(--radius);background:color-mix(in oklab,var(--panel),var(--ink) 2%);border:1px solid color-mix(in oklab,var(--ink),transparent 90%);box-shadow:var(--shadow);transition:transform .25s ease}
+    .card:hover{transform:translateY(-6px) rotate(-.25deg)}
+    .kpi{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.2em}
+    .value{font-size:26px;font-weight:800}
+
+    /* Skeleton shimmer */
+    .skeleton{--h:12px;height:var(--h);border-radius:8px;background:linear-gradient(90deg,rgba(255,255,255,.06) 25%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.06) 75%);background-size:200% 100%;animation:shimmer 1.6s linear infinite}
+    @keyframes shimmer{to{background-position:-200% 0}}
+
+    /* Tabbed panel (pure CSS radios) */
+    .tabs{display:grid;gap:10px}
+    .tab-bar{display:flex;gap:8px;flex-wrap:wrap}
+    .tab{display:inline-block}
+    .tab input{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%)}
+    .tab label{display:inline-block;padding:8px 12px;border-radius:999px;border:1px solid color-mix(in oklab,var(--ink),transparent 86%);cursor:pointer;user-select:none}
+    .panel{display:none;padding:10px 0;color:var(--muted)}
+    #t1:checked ~ .panels #p1, #t2:checked ~ .panels #p2, #t3:checked ~ .panels #p3{display:block;animation:fade .35s ease}
+    .tab input:checked + label{background:linear-gradient(180deg,color-mix(in oklab,var(--brand),white 10%),var(--brand));color:#0b0f1a;font-weight:700}
+    @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+    /* Tooltip */
+    .tip{position:relative;display:inline-block;border-bottom:1px dashed color-mix(in oklab,var(--ink),transparent 70%)}
+    .tip:hover .tipbox{opacity:1;transform:translate(-50%,-8px);pointer-events:auto}
+    .tipbox{position:absolute;left:50%;bottom:120%;transform:translate(-50%,-4px);opacity:0;pointer-events:none;transition:.2s ease;background:#10182b;color:#e8ebf3;padding:8px 10px;border-radius:10px;border:1px solid color-mix(in oklab,var(--ink),transparent 86%);box-shadow:var(--shadow);white-space:nowrap}
+
+    /* Ripple button (CSS only) */
+    .ripple{position:relative;overflow:hidden}
+    .ripple:active::after{content:"";position:absolute;inset:auto;left:var(--x,50%);top:var(--y,50%);translate:-50% -50%;width:0;height:0;border-radius:50%;background:currentColor;opacity:.25;animation:rip .6s ease}
+    @keyframes rip{to{width:220px;height:220px;opacity:0}}
+
+    /* Toast (checkbox hack) */
+    #toastToggle{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%)}
+    .toast{position:fixed;right:16px;bottom:16px;z-index:5;transform:translateY(120%);opacity:0;transition:.35s cubic-bezier(.2,.8,.2,1)}
+    #toastToggle:checked ~ .shell .toast{transform:none;opacity:1}
+    .toast-card{background:linear-gradient(180deg,color-mix(in oklab,var(--panel),var(--ink) 6%),color-mix(in oklab,var(--panel),transparent 20%));border:1px solid color-mix(in oklab,var(--ink),transparent 86%);padding:14px 16px;border-radius:14px;box-shadow:var(--shadow)}
+
+    footer{padding:16px;text-align:center;color:var(--muted)}
+
+    /* Accessibility/Reduced motion */
+    @media (prefers-reduced-motion: reduce){*{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition:none !important}}
+  </style>
+</head>
+<body>
+  <!-- Hidden inputs for features -->
+  <input id="toastToggle" type="checkbox" />
+
+  <div class="shell">
+    <div class="stars" aria-hidden="true"></div>
+
+    <header>
+      <div class="brand">
+        <div class="cube" aria-hidden="true"></div>
+        <div>Animation Lab — V2</div>
+      </div>
+      <div class="actions">
+        <a href="#open-toast" class="pill ripple" onclick="document.getElementById('toastToggle').checked=true;return false;">Show Toast</a>
+        <a href="#modal" class="pill primary ripple">Open Modal</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="blob" aria-hidden="true"></div>
+        <h1>Advanced CSS Animation Testbed</h1>
+        <div class="ticker" aria-label="Ticker">
+          <div class="line">Shimmer • Morph • Marquee • Tabs • Tooltip • Toast • Ripple • Hover Tilt • Skeleton • Flicker • ➜ All CSS, zero JS</div>
+        </div>
+      </section>
+
+      <div class="grid">
+        <article class="card">
+          <div class="kpi">Skeleton</div>
+          <div style="display:grid;gap:10px;margin-top:10px">
+            <div class="skeleton" style="--h:18px"></div>
+            <div class="skeleton" style="width:80%"></div>
+            <div class="skeleton" style="width:60%"></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="kpi">Tooltip</div>
+          <p style="margin:10px 0 0;color:var(--muted)">Hover the <span class="tip">word<span class="tipbox">Hello from a CSS-only tooltip ✨</span></span> to see tooltip behavior.</p>
+        </article>
+
+        <article class="card">
+          <div class="kpi">Tabs (No JS)</div>
+          <div class="tabs" style="margin-top:10px">
+            <div class="tab-bar">
+              <span class="tab"><input type="radio" name="tabs" id="t1" checked><label for="t1">Overview</label></span>
+              <span class="tab"><input type="radio" name="tabs" id="t2"><label for="t2">Latency</label></span>
+              <span class="tab"><input type="radio" name="tabs" id="t3"><label for="t3">Errors</label></span>
+            </div>
+            <div class="panels">
+              <div class="panel" id="p1">Animated page elements use GPU-friendly transforms and opacity for smoothness.</div>
+              <div class="panel" id="p2">Latency panel: focus on easing functions and transition durations.</div>
+              <div class="panel" id="p3">Errors panel: verify reduced-motion and visible focus states.</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="kpi">Buttons</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+            <a class="pill ripple" href="#">Ghost</a>
+            <a class="pill primary ripple" href="#">Primary</a>
+            <a class="pill ripple" href="#" onclick="document.getElementById('toastToggle').checked=false;return false;">Hide Toast</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="kpi">Flicker Title</div>
+          <div class="value" style="margin-top:8px;animation:flicker 3s infinite">Neon Flicker</div>
+        </article>
+
+        <article class="card" style="transform-style:preserve-3d;perspective:800px">
+          <div class="kpi">Hover Tilt</div>
+          <div class="value" style="margin-top:8px;transform:rotateY(-8deg);transition:transform .3s ease">Move mouse →</div>
+          <style>
+            .card:hover .value{transform:rotateY(6deg)}
+          </style>
+        </article>
+      </div>
+    </main>
+
+    <footer>Built for quick web testing • Pure HTML + CSS (with tiny inline attribute handlers to toggle toast)</footer>
+
+    <!-- Toast -->
+    <div class="toast">
+      <div class="toast-card">✅ Toast visible. This component slides in/out using a checkbox toggle.</div>
+    </div>
+  </div>
+
+  <!-- CSS-only modal using :target -->
+  <div id="modal" style="position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:10">
+    <a href="#" style="position:absolute;inset:0"></a>
+    <div style="position:relative;background:linear-gradient(180deg,color-mix(in oklab,var(--panel),var(--ink) 6%),color-mix(in oklab,var(--panel),transparent 20%));border:1px solid color-mix(in oklab,var(--ink),transparent 86%);padding:20px;border-radius:16px;box-shadow:var(--shadow);min-width:min(560px,92vw)">
+      <h2 style="margin:0 0 8px">CSS Modal</h2>
+      <p style="margin:0 0 14px;color:var(--muted)">This modal opens via an anchor link and the <code>:target</code> selector. Close by clicking outside or the button.</p>
+      <div style="display:flex;justify-content:flex-end;gap:10px">
+        <a href="#" class="pill ripple">Close</a>
+      </div>
+    </div>
+  </div>
+  <style>
+    #modal:target{display:flex;animation:fade .25s ease}
+    @keyframes flicker{0%,18%,22%,25%,53%,57%,100%{text-shadow:0 0 10px rgba(139,92,246,.8),0 0 20px rgba(139,92,246,.6),0 0 40px rgba(139,92,246,.4)}20%,24%,55%{text-shadow:none}}
+  </style>
+
+  <!-- NOTE: tiny inline JS is used only to toggle the toast checkbox for convenience. Remove onclick handlers if you need absolutely zero JS. -->
+</body>
+</html>
